@@ -1,0 +1,39 @@
+version: '3.7'
+
+#para roder os services abaixo
+#docker-compose up -d
+
+#para terminar os services abaixo
+#docker-compose down 
+
+services:
+          
+  #spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+  db:
+    image: bitnami/mariadb:latest
+    container_name: mariadb_container
+    restart: on-failure
+    environment:
+      - MARIADB_ROOT_PASSWORD=pass
+      - MARIADB_DATABASE=alura_jpa
+    volumes:
+      - ${PWD}/mariadb:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+  adminer:
+    image: adminer
+    container_name: mariadb_adminer
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - backend
+
+networks:     
+  backend:
+    driver: bridge
+    name: alura_network
+    

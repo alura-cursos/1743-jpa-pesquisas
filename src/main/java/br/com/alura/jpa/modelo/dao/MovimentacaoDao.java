@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import br.com.alura.jpa.modelo.MediaComData;
+import br.com.alura.jpa.modelo.Movimentacao;
 
 public class MovimentacaoDao {
 
@@ -14,6 +15,25 @@ public class MovimentacaoDao {
 	
 	public MovimentacaoDao(EntityManager em) {
 		this.em = em;
+	}
+	
+	public List<Movimentacao> getMovimentacoesFiltradasPorData(Integer dia, Integer mes, Integer ano) {
+		
+		String sql = "select m from Movimentacao m ";
+		
+		if(dia != null) {
+			sql += " day(m.data) = :pDia";
+		}
+		
+		if(mes != null) {
+			sql += " and month(m.data) = :pMes";
+		}
+		
+		if(ano != null) {
+			sql += " and year(m.data) = :pAno";
+		}
+		
+		return null;
 	}
 
 	public List<MediaComData> getMediaDiariaDasMovimentacoes() {

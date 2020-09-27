@@ -1,10 +1,15 @@
 package br.com.alura.jpa.modelo.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import br.com.alura.jpa.modelo.MediaComData;
 import br.com.alura.jpa.modelo.Movimentacao;
@@ -19,21 +24,34 @@ public class MovimentacaoDao {
 	
 	public List<Movimentacao> getMovimentacoesFiltradasPorData(Integer dia, Integer mes, Integer ano) {
 		
-		String sql = "select m from Movimentacao m ";
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Movimentacao> query = builder.createQuery(Movimentacao.class);
+		
+		Root<Movimentacao> root = query.from(Movimentacao.class);
+		List<Predicate> predicates = new ArrayList<>();
 		
 		if(dia != null) {
-			sql += " day(m.data) = :pDia";
+			//day(m.data) = :pDia
+			Predicate predicate = builder.equal(builder.function("day", Integer.class, root.get("data")), dia);
+			predicates.add(predicate);
 		}
 		
 		if(mes != null) {
-			sql += " and month(m.data) = :pMes";
+			//month(m.data) = :pMes
+			Predicate predicate = builder.equal(builder.function("month", Integer.class, root.get("data")), mes);
+			predicates.add(predicate);
 		}
 		
 		if(ano != null) {
-			sql += " and year(m.data) = :pAno";
+			//month(m.data) = :pAno
+			Predicate predicate = builder.equal(builder.function("year", Integer.class, root.get("data")), ano);
+			predicates.add(predicate);
 		}
 		
-		return null;
+		query.where(predicates.toArray(new Predicate[0]));
+		
+		TypedQuery<Movimentacao> typedQuery = em.createQuery(query);
+		return typedQuery.getResultList();
 	}
 
 	public List<MediaComData> getMediaDiariaDasMovimentacoes() {
